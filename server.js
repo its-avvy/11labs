@@ -79,21 +79,28 @@ async function getAIReply(userText) {
 app.get("/start-call", async (req, res) => {
   const number = req.query.number;
 
-  const url = `https://${process.env.EXOTEL_SID}:${process.env.EXOTEL_TOKEN}@api.exotel.com/v1/Accounts/${process.env.EXOTEL_SID}/Calls/connect.json`;
+  const url = `https://api.in.exotel.com/v1/Accounts/${process.env.EXOTEL_SID}/Calls/connect.json`;
 
   try {
-    await axios.post(url, null, {
-      params: {
-        From: process.env.EXOTEL_CALLER_ID,
-        To: number,
-        Url: `${process.env.BASE_URL}/first-response`
+    await axios.post(
+      url,
+      null,
+      {
+        auth: {
+          username: process.env.EXOTEL_SID,
+          password: process.env.EXOTEL_TOKEN
+        },
+        params: {
+          From: process.env.EXOTEL_CALLER_ID,
+          To: number,
+          Url: `${process.env.BASE_URL}/first-response`
+        }
       }
-    });
+    );
 
     res.send("Call initiated");
-
   } catch (err) {
-    console.error("Call Error:", err.response?.data || err.message);
+    console.error("Call Error FULL:", err.response?.data || err.message);
     res.send("Call failed");
   }
 });
@@ -158,3 +165,5 @@ app.get("/", (req, res) => {
 app.listen(process.env.PORT, () => {
   console.log("Server running...");
 });
+console.log("SID:", process.env.EXOTEL_SID);
+console.log("TOKEN:", process.env.EXOTEL_TOKEN ? "Loaded" : "Missing");
