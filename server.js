@@ -79,7 +79,7 @@ async function getAIReply(userText) {
 app.get("/start-call", async (req, res) => {
   const number = req.query.number;
 
-  const url = `https://api.in.exotel.com/v1/Accounts/${process.env.EXOTEL_SID}/Calls/connect.json`;
+const url = `https://api.exotel.com/v1/Accounts/${process.env.EXOTEL_SID}/Calls/connect.json`;
 
   try {
     await axios.post(
@@ -90,11 +90,12 @@ app.get("/start-call", async (req, res) => {
           username: process.env.EXOTEL_SID,
           password: process.env.EXOTEL_TOKEN
         },
-        params: {
-          From: process.env.EXOTEL_CALLER_ID,
-          To: number,
-          Url: `${process.env.BASE_URL}/first-response`
-        }
+       params: {
+  From: `0${number.slice(-10)}`,
+  CallerId: process.env.EXOTEL_CALLER_ID,
+  CallType: "trans",
+  Url: `${process.env.BASE_URL}/first-response`
+}
       }
     );
 
@@ -165,5 +166,3 @@ app.get("/", (req, res) => {
 app.listen(process.env.PORT, () => {
   console.log("Server running...");
 });
-console.log("SID:", process.env.EXOTEL_SID);
-console.log("TOKEN:", process.env.EXOTEL_TOKEN ? "Loaded" : "Missing");
